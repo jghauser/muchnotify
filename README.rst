@@ -1,4 +1,4 @@
-notifymuch
+muchnotify
 ==========
 
 This is a simple program that displays desktop notifications for unread
@@ -6,7 +6,7 @@ mail (or actually any search query) in the notmuch database. The notification
 can optionally have a button to run a mail client.
 
 .. image:: http://i.imgur.com/F3uAQmt.png                                                                                                
-    :alt: Screenshot of notifymuch
+    :alt: Screenshot of muchnotify
 
 When a message is shown in a notification, it is internally marked as 'recently
 seen' and not shown again for two days (configurable).
@@ -20,7 +20,7 @@ It can be installed together with its dependencies using::
 
     pip install .
 
-To use, execute ``notifymuch`` after new mail is indexed (for example in a
+To use, execute ``muchnotify`` after new mail is indexed (for example in a
 *post-new* hook). The program forks and stays in the background while the
 notification is active. If upon launch a notification is already active, it
 is updated.
@@ -29,7 +29,7 @@ is updated.
 Configuration
 -------------
 
-Configuration is stored in ``~/.config/notifymuch/notifymuch.cfg``,
+Configuration is stored in ``~/.config/muchnotify/muchnotify.cfg``,
 which is created on first run. Settings that can be set there:
 
 query

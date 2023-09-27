@@ -1,8 +1,8 @@
 import gi
 from gi.repository import Gio
 
-from notifymuch import config
-from notifymuch.messages import Messages
+from muchnotify import config
+from muchnotify.messages import Messages
 
 gi.require_version("Gio", "2.0")
 

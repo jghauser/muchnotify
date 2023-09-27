@@ -1,22 +1,23 @@
-from email.utils import parseaddr
 import os
-import time
 import shelve
+import time
+from email.utils import parseaddr
+
 import notmuch
 from gi.repository import GLib
-from notifymuch import config
 
+from muchnotify import config
 
 __all__ = ["Messages"]
 
 
-CACHE_DIR = os.path.join(GLib.get_user_cache_dir(), 'notifymuch')
-LAST_SEEN_FILE = os.path.join(CACHE_DIR, 'last_seen')
+CACHE_DIR = os.path.join(GLib.get_user_cache_dir(), "muchnotify")
+LAST_SEEN_FILE = os.path.join(CACHE_DIR, "last_seen")
 
 
 def exclude_recently_seen(messages):
     os.makedirs(CACHE_DIR, exist_ok=True)
-    recency_interval = int(config.get('recency_interval_hours')) * 60 * 60
+    recency_interval = int(config.get("recency_interval_hours")) * 60 * 60
     with shelve.open(LAST_SEEN_FILE) as last_seen:
         now = time.time()
         for k in last_seen.keys():
@@ -30,7 +31,7 @@ def exclude_recently_seen(messages):
 
 
 def filter_tags(ts):
-    hidden_tags = frozenset(config.get('hidden_tags').split(' '))
+    hidden_tags = frozenset(config.get("hidden_tags").split(" "))
     for t in ts:
         if t not in hidden_tags:
             yield t
@@ -38,7 +39,7 @@ def filter_tags(ts):
 
 def ellipsize(text, length=80):
     if len(text) > length:
-        return text[:length - 1] + '…'
+        return text[: length - 1] + "…"
     else:
         return text
 
@@ -50,6 +51,7 @@ def pretty_date(time=None):
     'just now', etc
     """
     from datetime import datetime
+
     now = datetime.now()
     if type(time) is int:
         diff = now - datetime.fromtimestamp(time)
@@ -61,15 +63,13 @@ def pretty_date(time=None):
     day_diff = diff.days
 
     if day_diff < 0:
-        return ''
+        return ""
 
     def ago(number, unit):
         if number == 1:
             return "a {unit} ago".format(unit=unit)
         else:
-            return "{number} {unit}s ago".format(
-                    number=round(number),
-                    unit=unit)
+            return "{number} {unit}s ago".format(number=round(number), unit=unit)
 
     if day_diff == 0:
         if second_diff < 10:
@@ -103,24 +103,27 @@ def pretty_sender(fromline):
 def tags_prefix(tags):
     tags = list(tags)
     if tags:
-        return '[{tags}] '.format(tags=' '.join(tags))
+        return "[{tags}] ".format(tags=" ".join(tags))
     else:
-        return ''
+        return ""
 
 
 def summary(messages):
-    return '\n'.join('{tags}{subject} ({sender}, {date})'.format(
-                subject=ellipsize(message.get_header('subject')),
-                sender=pretty_sender(message.get_header('from')),
-                date=pretty_date(message.get_date()),
-                tags=tags_prefix(filter_tags(message.get_tags())))
-            for message in messages)
+    return "\n".join(
+        "{tags}{subject} ({sender}, {date})".format(
+            subject=ellipsize(message.get_header("subject")),
+            sender=pretty_sender(message.get_header("from")),
+            date=pretty_date(message.get_date()),
+            tags=tags_prefix(filter_tags(message.get_tags())),
+        )
+        for message in messages
+    )
 
 
 class Messages:
     def __init__(self):
         db = notmuch.Database()
-        self.query = notmuch.Query(db, config.get('query'))
+        self.query = notmuch.Query(db, config.get("query"))
         self.query.set_sort(notmuch.Query.SORT.OLDEST_FIRST)
 
     def count(self):

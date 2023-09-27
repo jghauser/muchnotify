@@ -1,24 +1,29 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import sys
-import argparse
 
 parser = argparse.ArgumentParser(
-        description='''
+    description="""
             Display desktop notifications for unread mail in notmuch database.
-            ''')
+            """
+)
 parser.set_defaults(print_summary=False)
-parser.add_argument('--print-summary', dest='print_summary',
-                    action='store_true',
-                    help="""
+parser.add_argument(
+    "--print-summary",
+    dest="print_summary",
+    action="store_true",
+    help="""
                     Just print the query summary to stdout, without recency
                     tracking.
-                    """)
+                    """,
+)
 args = parser.parse_args()
 
 if args.print_summary:
-    from notifymuch.messages import Messages
-    from notifymuch import config
+    from muchnotify import config
+    from muchnotify.messages import Messages
+
     config.load()
     summary = Messages().summary()
     if summary:
@@ -30,5 +35,6 @@ else:
     if pid > 0:
         os._exit(0)
 
-    from notifymuch.notification import show_notification
+    from muchnotify.notification import show_notification
+
     show_notification()
